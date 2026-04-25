@@ -179,6 +179,35 @@ The extension writes:
 - `src/checkpoints/mega_acceptability_uid_cv.csv`
 - `src/figures/figure_mega_acceptability_uid_power_sweep.png`
 
+## Additional Extension: EMTeC
+
+The third additional-plan extension is implemented in:
+
+```text
+src/additional_plan_emtec_extension.ipynb
+```
+
+This notebook is a stretch extension for the reading-time side of the project. It downloads the public
+EMTeC corrected reading measures and stimuli metadata, aggregates word-level eye-tracking measures into
+participant-text trials, and tests whether GPT-2 `surprisal^k` predictors explain total fixation time when
+people read LLM-generated text. It also compares information-density profiles across generation models and
+decoding strategies. The notebook intentionally does not download the separate 340GB model-internal tensor
+release.
+
+To generate and run it:
+
+```bash
+make run-emtec-extension
+```
+
+The extension writes:
+
+- `src/checkpoints/emtec_text_uid_features.csv`
+- `src/checkpoints/emtec_trial_features.csv`
+- `src/checkpoints/emtec_uid_cv.csv`
+- `src/checkpoints/emtec_decoding_uid_summary.csv`
+- `src/figures/figure_emtec_uid_generated_text.png`
+
 ## Results And Conclusions
 
 The original paper's conclusion is nuanced: reading-time results are broadly compatible with earlier linear-surprisal findings, but also leave room for a weakly super-linear effect; acceptability judgments give clearer evidence that non-uniform information density predicts lower acceptability; and global, language-level operationalizations of UID tend to explain the psychometric data better than local alternatives.
@@ -197,6 +226,8 @@ Overall, this replication supports the original paper's broad contrast for the p
 For the OneStop extension, the preliminary result is more cautious. In ordinary reading, adding paragraph-level GPT-2 `surprisal^k` predictors yields only very small improvements over length/frequency baselines, and the preferred exponent does not show the same clear super-linear pattern seen in the acceptability analyses. This should be interpreted as a boundary-condition result for the current extension design, not as a refutation of the original paper: OneStop is a new eye-tracking corpus, the analysis is paragraph-level rather than the original sentence-level setup, and the first extension currently uses only the ordinary-reading regime.
 
 For the MegaAcceptability extension, the preliminary result is more directly supportive of the original acceptability conclusion. With the WikiText-103 KenLM 5-gram model, the simple correlation between negative `surprisal^k` and normalized acceptability peaks around `k = 1.25`, and the controlled 5-fold CV analysis peaks around `k = 1.5` after accounting for length, verb identity, and syntactic frame. This suggests that the acceptability-side super-linear pattern generalizes beyond CoLA/BNC to a fine-grained clause-embedding judgment dataset, with the caveat that this extension currently uses an n-gram model rather than GPT-2/BERT.
+
+For the EMTeC extension, the preliminary result is a modest but interesting reading-time generalization to LLM-generated text. Using EMTeC's precomputed GPT-2 surprisals, the grouped 5-fold CV analysis peaks around `k = 1.5` for predicting log total fixation time, with a small improvement over the linear `k = 1` setting. This aligns with the original paper's cautious reading-time conclusion: weak super-linearity remains plausible, but the effect is not as decisive as in acceptability judgments. The descriptive decoding-strategy analysis also shows that stochastic strategies such as sampling and top-k tend to produce higher-surprisal text than greedy or beam decoding, indicating that generation choices affect the information-density profile that readers encounter.
 
 ## Repository Map
 

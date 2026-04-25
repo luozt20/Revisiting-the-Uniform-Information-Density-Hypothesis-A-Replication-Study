@@ -6,7 +6,6 @@ __pycache__/
 # Data
 *.pkl
 *.rds
-*.png
 *.out
 .DS_Store
 
@@ -139,8 +138,16 @@ dmypy.json
 
 # Data
 src/corpora/*
-src/checkpoints/
-src/figures/
+src/checkpoints/*
+!src/checkpoints/*_cv.csv
+!src/checkpoints/*_summary.csv
+!src/checkpoints/*_correlations.csv
+!src/checkpoints/case_study2_variance.csv
+!src/checkpoints/case_study3_all_vars.csv
+!src/checkpoints/case_study3_out.csv
+src/figures/*
+!src/figures/*.png
+!src/figures/*.pdf
 src/wikitext-103/
 src/wikitext-103-raw/
 src/wikitext-103-v1.zip

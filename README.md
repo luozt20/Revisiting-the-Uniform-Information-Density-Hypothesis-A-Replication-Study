@@ -28,8 +28,9 @@ The original repository is preserved as the historical base, but this replicatio
 - `scripts/build_public_replication_notebook.py` to generate `src/revisiting-uid-public.ipynb`
 - a public notebook path that skips unavailable Brown/Dundee/GECO inputs when needed
 - a modernized plotting style for the acceptability baseline figure
+- committed summary figures and compact result CSVs for easier GitHub inspection
 
-Generated data, checkpoints, figures, and the large KenLM ARPA file are intentionally ignored by git.
+Large generated data, intermediate checkpoints, executed notebooks, and the KenLM ARPA file are intentionally ignored by git. Compact summary CSVs and final figures are committed so the project can be inspected directly on GitHub.
 
 ## Data Availability
 
@@ -119,7 +120,7 @@ The public notebook should produce the main replication artifacts:
 - `figure_surprisal_acceptability_correlation`: correlation between transformed surprisal and acceptability
 - `figure_case_study3_windows`: comparison of alternative context windows where public data supports it
 
-The most useful CSV checkpoints for inspection are:
+The most useful committed CSV checkpoints for inspection are:
 
 - `src/checkpoints/acceptability_cv.csv`
 - `src/checkpoints/lau_acceptability_cv.csv`
@@ -127,7 +128,7 @@ The most useful CSV checkpoints for inspection are:
 - `src/checkpoints/case_study2_variance.csv`
 - `src/checkpoints/case_study3_all_vars.csv`
 
-These generated files are not committed because they are reproducible outputs rather than source files.
+Larger intermediate feature tables and model-score caches are still ignored because they are reproducible outputs rather than source files.
 
 ## Additional Extension: OneStop
 
@@ -207,6 +208,42 @@ The extension writes:
 - `src/checkpoints/emtec_uid_cv.csv`
 - `src/checkpoints/emtec_decoding_uid_summary.csv`
 - `src/figures/figure_emtec_uid_generated_text.png`
+
+## Visual Results
+
+The most important plots are committed under `src/figures/` so the replication can be read directly on GitHub.
+
+### Main Replication
+
+The core public replication compares surprisal power transforms across reading-time and acceptability datasets. The acceptability panels show clearer variation across `k`; the public reading-time panels are flatter, which matches the original paper's more cautious reading-time conclusion.
+
+![Reading-time and acceptability power sweep](src/figures/figure_reading_acceptability_delta_loglik.png)
+
+The acceptability baseline figure compares `surprisal^k` predictors with SLOR and NormLP. This makes the replication more conservative: the result is not simply that any transformed surprisal predictor automatically beats every existing acceptability baseline.
+
+![Acceptability baselines](src/figures/figure_acceptability_baselines.png)
+
+The correlation plot gives the most direct acceptability-side visualization: sentence acceptability is more strongly correlated with transformed surprisal than with a strictly linear `k = 1` setting in several model/dataset combinations.
+
+![Surprisal and acceptability correlation](src/figures/figure_surprisal_acceptability_correlation.png)
+
+The windowed UID analysis checks whether a more local or more global notion of information density is more predictive where the public data supports the comparison.
+
+![UID window comparison](src/figures/figure_case_study3_windows.png)
+
+### Additional Extensions
+
+OneStop is a new ordinary-reading eye-tracking corpus. Its paragraph-level reading-time result is close to zero overall, so it is best read as a boundary-condition result: the clear acceptability pattern does not automatically transfer to this aggregation of ordinary reading.
+
+![OneStop ordinary-reading extension](src/figures/figure_onestop_ordinary_uid_by_difficulty.png)
+
+MegaAcceptability is the strongest extension result. The correlation and controlled CV panels both peak above `k = 1`, suggesting that the acceptability-side super-linear pattern generalizes to a large clause-embedding judgment dataset.
+
+![MegaAcceptability extension](src/figures/figure_mega_acceptability_uid_power_sweep.png)
+
+EMTeC is the stretch extension on LLM-generated text. The reading-time effect is modest but peaks around `k = 1.5`, while the decoding-strategy panel shows that generation choices change the information-density profile readers encounter.
+
+![EMTeC generated-text extension](src/figures/figure_emtec_uid_generated_text.png)
 
 ## Results And Conclusions
 

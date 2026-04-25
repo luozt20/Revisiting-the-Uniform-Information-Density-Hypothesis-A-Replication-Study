@@ -129,18 +129,74 @@ The most useful CSV checkpoints for inspection are:
 
 These generated files are not committed because they are reproducible outputs rather than source files.
 
+## Additional Extension: OneStop
+
+The first additional-plan extension is implemented in:
+
+```text
+src/additional_plan_onestop_uid_extension.ipynb
+```
+
+This notebook is separate from the main replication notebook. It downloads the OneStop Ordinary Reading
+word-level Interest Area Report, aggregates it into paragraph-level participant trials, and tests whether
+the UID power-sweep pattern generalizes to OneStop Advanced vs Elementary text versions.
+
+To generate and run it:
+
+```bash
+make run-onestop-extension
+```
+
+The extension writes:
+
+- `src/checkpoints/onestop_ordinary_trial_features.csv`
+- `src/checkpoints/onestop_ordinary_uid_cv.csv`
+- `src/figures/figure_onestop_ordinary_uid_by_difficulty.png`
+
+## Additional Extension: MegaAcceptability
+
+The second additional-plan extension is implemented in:
+
+```text
+src/additional_plan_mega_acceptability_extension.ipynb
+```
+
+This notebook is separate from both the main replication notebook and the OneStop extension. It downloads
+MegaAcceptability v1.2, uses the normalized clause-embedding acceptability scores, scores each sentence
+with the existing WikiText-103 KenLM 5-gram model, and tests whether the acceptability-side super-linear
+surprisal pattern generalizes to this new structured acceptability dataset.
+
+To generate and run it:
+
+```bash
+make run-mega-acceptability-extension
+```
+
+The extension writes:
+
+- `src/checkpoints/mega_acceptability_ngram_features.csv`
+- `src/checkpoints/mega_acceptability_uid_correlations.csv`
+- `src/checkpoints/mega_acceptability_uid_cv.csv`
+- `src/figures/figure_mega_acceptability_uid_power_sweep.png`
+
 ## Results And Conclusions
 
-The replication supports the paper's main qualitative claim for acceptability judgments: transformed surprisal often improves prediction over the linear `k = 1` baseline, and the clearest improvements occur in the acceptability setting.
+The original paper's conclusion is nuanced: reading-time results are broadly compatible with earlier linear-surprisal findings, but also leave room for a weakly super-linear effect; acceptability judgments give clearer evidence that non-uniform information density predicts lower acceptability; and global, language-level operationalizations of UID tend to explain the psychometric data better than local alternatives.
+
+Our public replication recovers the clearest part of that conclusion for the data that can be rerun locally. Transformed surprisal often improves prediction over the linear `k = 1` baseline in acceptability judgments, while the public reading-time results show smaller and less decisive differences across `k`.
 
 In the local public-data run:
 
 - CoLA shows best-performing exponents above `k = 1` for BERT, GPT-2, and the 5-gram model.
 - BNC shows a strong super-linear pattern for BERT, while GPT-2 and the 5-gram model are less consistently super-linear in this local run.
 - SLOR and NormLP remain competitive baselines in some acceptability settings, so the result is not simply that every transformed-surprisal model dominates every baseline.
-- Public reading-time results are weaker than acceptability results. Natural Stories and Provo show only small differences across `k`, which is consistent with the paper's claim that reading-time evidence is less decisive.
+- Public reading-time results are weaker than acceptability results. Natural Stories and Provo show only small differences across `k`, which is consistent with the paper's claim that reading-time evidence does not reject a linear surprisal account even though weak super-linearity remains plausible.
 
-Overall, this replication recovers the broad contrast emphasized by the original paper for the public subset we could rerun: acceptability judgments provide clearer evidence against a strictly linear UID prediction than reading-time data. Exact numerical agreement with the complete original project is not expected because Brown/Dundee/GECO are not fully available in this workflow, TransfoXL is skipped for compatibility reasons, and modern Python/R/Hugging Face dependencies differ from the original release environment.
+Overall, this replication supports the original paper's broad contrast for the public subset we could rerun: acceptability judgments provide clearer evidence for non-linear UID-related effects than reading-time data, while the available reading-time results remain compatible with both linear surprisal and weak super-linear UID interpretations. Exact numerical agreement with the complete original project is not expected because Brown/Dundee/GECO are not fully available in this workflow, TransfoXL is skipped for compatibility reasons, and modern Python/R/Hugging Face dependencies differ from the original release environment.
+
+For the OneStop extension, the preliminary result is more cautious. In ordinary reading, adding paragraph-level GPT-2 `surprisal^k` predictors yields only very small improvements over length/frequency baselines, and the preferred exponent does not show the same clear super-linear pattern seen in the acceptability analyses. This should be interpreted as a boundary-condition result for the current extension design, not as a refutation of the original paper: OneStop is a new eye-tracking corpus, the analysis is paragraph-level rather than the original sentence-level setup, and the first extension currently uses only the ordinary-reading regime.
+
+For the MegaAcceptability extension, the preliminary result is more directly supportive of the original acceptability conclusion. With the WikiText-103 KenLM 5-gram model, the simple correlation between negative `surprisal^k` and normalized acceptability peaks around `k = 1.25`, and the controlled 5-fold CV analysis peaks around `k = 1.5` after accounting for length, verb identity, and syntactic frame. This suggests that the acceptability-side super-linear pattern generalizes beyond CoLA/BNC to a fine-grained clause-embedding judgment dataset, with the caveat that this extension currently uses an n-gram model rather than GPT-2/BERT.
 
 ## Repository Map
 

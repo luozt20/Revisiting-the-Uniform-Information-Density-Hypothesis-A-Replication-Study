@@ -17,5 +17,6 @@ scipy
 scikit-learn
 plotnine
 chardet
+requests
 cmake
 kenlm

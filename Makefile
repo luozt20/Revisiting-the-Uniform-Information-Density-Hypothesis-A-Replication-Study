@@ -12,7 +12,7 @@ MPLCONFIGDIR := $(XDG_CACHE_HOME)/matplotlib
 NLTK_DATA := $(XDG_CACHE_HOME)/nltk_data
 COMMON_ENV = R_LIBS_USER="$(R_LIBS_USER)" XDG_CACHE_HOME="$(XDG_CACHE_HOME)" HF_HOME="$(HF_HOME)" MPLCONFIGDIR="$(MPLCONFIGDIR)" NLTK_DATA="$(NLTK_DATA)" TOKENIZERS_PARALLELISM=false
 
-.PHONY: check-env venv install install-r build-kenlm build-wiki-arpa download-public-data notebook public-notebook run-public-replication
+.PHONY: check-env venv install install-r build-kenlm build-wiki-arpa download-public-data notebook public-notebook run-public-replication onestop-extension-notebook run-onestop-extension mega-acceptability-extension-notebook run-mega-acceptability-extension
 
 check-env:
 	$(COMMON_ENV) $(if $(wildcard $(PY)),$(PY),$(PYTHON)) scripts/check_replication_env.py
@@ -45,3 +45,25 @@ public-notebook:
 
 run-public-replication:
 	$(COMMON_ENV) bash scripts/run_public_replication.sh
+
+onestop-extension-notebook:
+	$(COMMON_ENV) $(PY) scripts/build_onestop_extension_notebook.py
+
+run-onestop-extension: onestop-extension-notebook
+	cd src && $(COMMON_ENV) ../$(JUPYTER) nbconvert \
+	  --to notebook \
+	  --execute additional_plan_onestop_uid_extension.ipynb \
+	  --output additional_plan_onestop_uid_extension.executed.ipynb \
+	  --ExecutePreprocessor.timeout=-1 \
+	  --ExecutePreprocessor.kernel_name=python3
+
+mega-acceptability-extension-notebook:
+	$(COMMON_ENV) $(PY) scripts/build_mega_acceptability_extension_notebook.py
+
+run-mega-acceptability-extension: mega-acceptability-extension-notebook
+	cd src && $(COMMON_ENV) ../$(JUPYTER) nbconvert \
+	  --to notebook \
+	  --execute additional_plan_mega_acceptability_extension.ipynb \
+	  --output additional_plan_mega_acceptability_extension.executed.ipynb \
+	  --ExecutePreprocessor.timeout=-1 \
+	  --ExecutePreprocessor.kernel_name=python3

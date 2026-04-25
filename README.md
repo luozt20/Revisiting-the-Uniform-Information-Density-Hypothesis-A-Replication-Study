@@ -15,6 +15,8 @@ Our replication focuses on the part of the paper that can be rerun with publicly
 
 The practical target is not to reproduce every appendix number exactly. Instead, the goal is to recover the paper's main qualitative pattern under a modern local environment and document where data availability or package drift prevents exact reproduction.
 
+In that sense, this repository should be read as a successful replication of a well-defined public subset of the original project, not as a complete reproduction of every dataset, model, and appendix analysis from the original repository.
+
 ## What We Changed
 
 The original repository is preserved as the historical base, but this replication adds a more reproducible public-data workflow:
@@ -40,13 +42,17 @@ The public workflow can use:
 - UCL self-paced reading and eye-tracking files
 - WikiText-103 for the 5-gram language model
 
-The following datasets are treated as unavailable or optional in this replication:
+The following original datasets are treated as unavailable or optional in this replication:
 
 - Brown: the original Google Drive archive referenced by the upstream code currently returns `404`
 - Dundee: the upstream README states that access requires contacting the original authors
 - GECO: referenced by the notebook, but not downloaded by the provided public-data scripts
 
-Because of these constraints, the strongest claims in this repository are about the public acceptability analyses and the public reading-time datasets that successfully execute locally.
+One original model branch is also not included in the public rerun:
+
+- TransfoXL: the upstream notebook includes a `transxl` path, but the corresponding Hugging Face `TransfoXL` stack is deprecated and is not compatible with the current environment used for this replication. The public notebook therefore keeps GPT-2, BERT, and the KenLM 5-gram model, and skips TransfoXL.
+
+Because of these constraints, the strongest claims in this repository are about the public subset that successfully executes locally: CoLA/BNC acceptability, the available public reading-time datasets, and the GPT-2/BERT/5-gram model comparisons. It is not a full reproduction of the original project's complete data and model coverage.
 
 ## How To Run
 
@@ -134,7 +140,7 @@ In the local public-data run:
 - SLOR and NormLP remain competitive baselines in some acceptability settings, so the result is not simply that every transformed-surprisal model dominates every baseline.
 - Public reading-time results are weaker than acceptability results. Natural Stories and Provo show only small differences across `k`, which is consistent with the paper's claim that reading-time evidence is less decisive.
 
-Overall, this replication recovers the broad contrast emphasized by the original paper: acceptability judgments provide clearer evidence against a strictly linear UID prediction than reading-time data. Exact numerical agreement is limited by missing restricted datasets, unavailable Brown data, and changes in modern Python/R/Hugging Face dependencies.
+Overall, this replication recovers the broad contrast emphasized by the original paper for the public subset we could rerun: acceptability judgments provide clearer evidence against a strictly linear UID prediction than reading-time data. Exact numerical agreement with the complete original project is not expected because Brown/Dundee/GECO are not fully available in this workflow, TransfoXL is skipped for compatibility reasons, and modern Python/R/Hugging Face dependencies differ from the original release environment.
 
 ## Repository Map
 
@@ -148,4 +154,4 @@ Overall, this replication recovers the broad contrast emphasized by the original
 
 ## Limitations
 
-This repository should be read as a transparent public-data replication rather than a perfect archival rerun of every original experiment. The main limitations are missing Brown/Dundee/GECO inputs, model-version drift in the `transformers` ecosystem, and the computational cost of rebuilding language-model scores from scratch.
+This repository should be read as a transparent public-data subset replication rather than a perfect archival rerun of every original experiment. The main limitations are missing Brown/Dundee/GECO inputs, the skipped TransfoXL branch, model-version drift in the `transformers` ecosystem, and the computational cost of rebuilding language-model scores from scratch.

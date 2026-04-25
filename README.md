@@ -1,98 +1,151 @@
-# Revisiting UID Replication Guide
+# Revisiting the Uniform Information Density Hypothesis: Replication Study
 
-**Credit.** This replication study is based on and adapted from the original [`rycolab/revisiting-uid`](https://github.com/rycolab/revisiting-uid.git) repository for "Revisiting the Uniform Information Density Hypothesis."
+**Credit.** This replication study is based on and adapted from the original [`rycolab/revisiting-uid`](https://github.com/rycolab/revisiting-uid.git) repository for the EMNLP 2021 paper "Revisiting the Uniform Information Density Hypothesis."
 
-This guide translates the EMNLP 2021 paper "Revisiting the Uniform Information Density Hypothesis" into a local execution plan for the team project.
+## What This Project Is
 
-## Recommended Scope
+This repository is a course-project replication of the main empirical analyses from "Revisiting the Uniform Information Density Hypothesis." The original paper asks whether human processing difficulty is best predicted by linear surprisal, as a strict UID account might suggest, or by transformations of surprisal that allow non-linear effects.
 
-For the class project, prioritize the paper's main empirical findings before any extensions:
+Our replication focuses on the part of the paper that can be rerun with publicly available data:
 
-1. Reproduce the acceptability experiments on CoLA and BNC.
-2. Reproduce the sentence-level reading-time experiments on Natural Stories, Provo, and UCL first.
-3. Add Brown only if you can recover the original data bundle from a working mirror; the original Google Drive link is now dead.
-4. Treat Dundee and GECO as optional extensions because they are not fully bundled with the repo.
-5. Treat Case Study 2 and Case Study 3 as stretch goals after the main psychometric predictions run.
+- acceptability judgments from CoLA and BNC
+- sentence-level reading-time analyses for public datasets, especially Natural Stories and Provo
+- comparison of sentence surprisal transformed by different exponents `k`
+- comparison against the paper's baseline acceptability predictors, SLOR and NormLP
 
-This matches the proposal more closely than trying to finish every appendix result first.
+The practical target is not to reproduce every appendix number exactly. Instead, the goal is to recover the paper's main qualitative pattern under a modern local environment and document where data availability or package drift prevents exact reproduction.
 
-## Main Claims To Replicate
+## What We Changed
 
-The paper's central claims are:
+The original repository is preserved as the historical base, but this replication adds a more reproducible public-data workflow:
 
-- Acceptability judgments show clearer evidence for a super-linear surprisal effect than reading times.
-- For the power sweep over sentence surprisal, values with `k > 1` outperform the linear baseline (`k = 1`) on acceptability.
-- Reading-time results are weaker, but still compatible with a slight super-linear effect.
-- A regression toward a language-level mean surprisal can outperform sentence-level or purely local variability measures.
+- a root-level `Makefile` for setup, data preparation, model building, and notebook execution
+- `scripts/check_replication_env.py` to verify Python, R, KenLM, and data prerequisites
+- `scripts/prepare_public_data.sh` to download and organize public datasets
+- `scripts/build_wiki_arpa.sh` to build the WikiText-103 KenLM 5-gram model
+- `scripts/build_public_replication_notebook.py` to generate `src/revisiting-uid-public.ipynb`
+- a public notebook path that skips unavailable Brown/Dundee/GECO inputs when needed
+- a modernized plotting style for the acceptability baseline figure
 
-## Paper To Notebook Map
-
-- Data loading and surprisal scoring: notebook cells 19-76
-- Main psychometric prediction experiments: notebook cells 78-94
-- Alternative UID operationalizations: notebook cells 95-106
-- Correlation appendix analyses: notebook cells 108-111
-
-The practical "main result" for this project is the section around cells 89-94.
+Generated data, checkpoints, figures, and the large KenLM ARPA file are intentionally ignored by git.
 
 ## Data Availability
 
-Publicly obtainable in this repo workflow:
+The public workflow can use:
 
 - CoLA
-- Provo
-- UCL self-paced reading and eye-tracking
 - BNC
-- Natural Stories, cached locally from the public GitHub repo
-- WikiText-103 for the KenLM 5-gram model
+- Natural Stories
+- Provo
+- UCL self-paced reading and eye-tracking files
+- WikiText-103 for the 5-gram language model
 
-Not bundled or access-constrained:
+The following datasets are treated as unavailable or optional in this replication:
 
-- Brown: the original Google Drive bundle used by the repo now returns `404`
-- Dundee corpus: the upstream README states that the original authors must be contacted
-- GECO Dutch materials: referenced by the notebook, but not downloaded by the provided scripts
+- Brown: the original Google Drive archive referenced by the upstream code currently returns `404`
+- Dundee: the upstream README states that access requires contacting the original authors
+- GECO: referenced by the notebook, but not downloaded by the provided public-data scripts
 
-## Local Workflow
+Because of these constraints, the strongest claims in this repository are about the public acceptability analyses and the public reading-time datasets that successfully execute locally.
 
-From the repo root:
+## How To Run
+
+Clone the repository with submodules:
+
+```bash
+git clone --recursive git@github.com:luozt20/Revisiting-the-Uniform-Information-Density-Hypothesis-A-Replication-Study.git
+cd Revisiting-the-Uniform-Information-Density-Hypothesis-A-Replication-Study
+```
+
+If you already cloned without submodules, run:
+
+```bash
+git submodule update --init --recursive
+```
+
+Set up the Python and R environment:
 
 ```bash
 make check-env
 make install
 make install-r
+```
+
+Build KenLM and prepare the public datasets:
+
+```bash
 make build-kenlm
 make download-public-data
 make build-wiki-arpa
+```
+
+Generate and run the public replication notebook:
+
+```bash
 make public-notebook
 make run-public-replication
 ```
 
-If you want the cleanest path to a first result, start with the acceptability analysis after CoLA and BNC are available, then return to the reading-time datasets.
+The executed notebook is written to:
 
-`make run-public-replication` executes a derived notebook that:
+```text
+src/revisiting-uid-public.executed.ipynb
+```
 
-- uses local `src/corpora/naturalstories/` files instead of live GitHub reads
-- skips the stale `load_stats(...)` cells that expect precomputed pickle files
-- skips `transxl` in the public notebook because the deprecated TransfoXL path is no longer compatible with the current `transformers` stack
-- leaves Brown, Dundee, and GECO empty when the data is unavailable
-- preserves the main acceptability and public reading-time analysis blocks
+Figures are written to:
 
-## What Counts As A Successful First Replication
+```text
+src/figures/
+```
 
-A solid first milestone is:
+Checkpoints and intermediate tables are written to:
 
-- The notebook runs through data preparation without missing-file errors.
-- The `acceptability` dataframe is created for CoLA and BNC.
-- The `k` sweep in cells 91-94 peaks above the linear baseline for at least part of the acceptability setup.
-- The direction of the trend agrees with the paper even if exact numbers differ.
-- Any missing Brown/Dundee/GECO result is documented explicitly as a data-access limitation rather than silently omitted.
+```text
+src/checkpoints/
+```
 
-Only after that should you spend time on Dundee, GECO, or later case studies.
+## Expected Outputs
 
-## Report-Facing Deliverables
+The public notebook should produce the main replication artifacts:
 
-For the final project write-up, collect:
+- `figure_reading_acceptability_delta_loglik`: power-sweep comparison for reading time and acceptability
+- `figure_acceptability_baselines`: acceptability power sweep compared with SLOR and NormLP baselines
+- `figure_surprisal_acceptability_correlation`: correlation between transformed surprisal and acceptability
+- `figure_case_study3_windows`: comparison of alternative context windows where public data supports it
 
-1. A short methods section documenting models, datasets, and preprocessing choices actually used locally.
-2. One figure reproducing the power sweep over `k` for acceptability.
-3. One table or figure summarizing reading-time results on the public datasets you could run.
-4. A short discrepancy section explaining any differences from the paper due to missing corpora, package drift, or hardware limits.
+The most useful CSV checkpoints for inspection are:
+
+- `src/checkpoints/acceptability_cv.csv`
+- `src/checkpoints/lau_acceptability_cv.csv`
+- `src/checkpoints/reading_time_cv.csv`
+- `src/checkpoints/case_study2_variance.csv`
+- `src/checkpoints/case_study3_all_vars.csv`
+
+These generated files are not committed because they are reproducible outputs rather than source files.
+
+## Results And Conclusions
+
+The replication supports the paper's main qualitative claim for acceptability judgments: transformed surprisal often improves prediction over the linear `k = 1` baseline, and the clearest improvements occur in the acceptability setting.
+
+In the local public-data run:
+
+- CoLA shows best-performing exponents above `k = 1` for BERT, GPT-2, and the 5-gram model.
+- BNC shows a strong super-linear pattern for BERT, while GPT-2 and the 5-gram model are less consistently super-linear in this local run.
+- SLOR and NormLP remain competitive baselines in some acceptability settings, so the result is not simply that every transformed-surprisal model dominates every baseline.
+- Public reading-time results are weaker than acceptability results. Natural Stories and Provo show only small differences across `k`, which is consistent with the paper's claim that reading-time evidence is less decisive.
+
+Overall, this replication recovers the broad contrast emphasized by the original paper: acceptability judgments provide clearer evidence against a strictly linear UID prediction than reading-time data. Exact numerical agreement is limited by missing restricted datasets, unavailable Brown data, and changes in modern Python/R/Hugging Face dependencies.
+
+## Repository Map
+
+- `src/revisiting-uid.ipynb`: original analysis notebook from the upstream repository
+- `src/revisiting-uid-public.ipynb`: generated public-data replication notebook
+- `src/language_modeling.py`: language-model scoring utilities
+- `scripts/`: setup, data, environment, and notebook-generation helpers
+- `Makefile`: end-to-end local workflow targets
+- `requirements.txt`: Python dependencies
+- `kenlm/`: KenLM submodule used for the 5-gram model
+
+## Limitations
+
+This repository should be read as a transparent public-data replication rather than a perfect archival rerun of every original experiment. The main limitations are missing Brown/Dundee/GECO inputs, model-version drift in the `transformers` ecosystem, and the computational cost of rebuilding language-model scores from scratch.

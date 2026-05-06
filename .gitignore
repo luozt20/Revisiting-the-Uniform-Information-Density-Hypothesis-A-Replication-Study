@@ -145,6 +145,7 @@ src/checkpoints/*
 !src/checkpoints/case_study2_variance.csv
 !src/checkpoints/case_study3_all_vars.csv
 !src/checkpoints/case_study3_out.csv
+!src/checkpoints/ai_assisted_analysis_verification.txt
 src/figures/*
 !src/figures/*.png
 !src/figures/*.pdf

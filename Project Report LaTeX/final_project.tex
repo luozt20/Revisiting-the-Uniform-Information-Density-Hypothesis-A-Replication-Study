@@ -24,10 +24,12 @@
 
 \author{%
   Zitong Luo \\
+  Center for Data Science\\
   New York University\\
   \texttt{zl5847@nyu.edu} \\
   \And
   Qianqian Zhao \\
+  Center for Data Science\\
   New York University\\
   \texttt{qz2671@nyu.edu} \\
 }
@@ -37,12 +39,12 @@
 \maketitle
 
 \begin{abstract}
-The uniform information density (UID) hypothesis predicts that language users prefer signals whose information is distributed smoothly rather than concentrated in sharp surprisal spikes. We replicate the public-data portion of Meister et al.'s analysis of whether reading times and acceptability judgments are better predicted by linear or power-transformed surprisal. We also contribute three extensions: OneStop ordinary eye-tracking, MegaAcceptability clause-embedding judgments, and EMTeC eye movements on LLM-generated text. The public replication recovers the original qualitative contrast: acceptability judgments show clearer benefits from non-linear surprisal predictors than reading-time data. Scoring every extension with GPT-2, BERT, and a WikiText-103 5-gram model sharpens this contrast but also exposes model dependence: MegaAcceptability gives the clearest acceptability-side generalization, EMTeC gives a small reading-time signal, and OneStop remains weak at paragraph level.
+The uniform information density (UID) hypothesis proposes that speakers tend to distribute information so that surprisal remains approximately even across an utterance. Here we replicate Meister et al.'s study of the UID hypothesis on a public data subset and add three extensions: OneStop (ordinary eye-tracking), MegaAcceptability (clause-embedding judgments), and EMTeC (eye movements on LLM-generated text). The public replication is consistent with the original qualitative contrast: acceptability judgments show clearer benefits from non-linear surprisal predictors than reading-time data. Scoring every extension with GPT-2, BERT, and a WikiText-103 5-gram model sharpens this contrast but also exposes model dependence: MegaAcceptability gives the clearest acceptability-side generalization, EMTeC gives a small reading-time signal, and OneStop remains weak at the paragraph level.
 \end{abstract}
 
-\section{Introduction and literature review}
+\section{Introduction}
 
-Information theory gives a compact way to connect linguistic prediction with human processing. The surprisal of a word $u_n$ is $s(u_n)=-\log p(u_n \mid u_{<n})$, so lower-probability words carry more information \cite{shannon1948,hale2001,levy2008}. Prior comprehension work shows that contextual surprisal predicts processing difficulty, often approximately linearly \cite{smithLevy2013,goodkind2018}. UID adds a related but stronger efficiency claim from the production literature: speakers and comprehenders should prefer utterances that avoid unnecessary peaks and troughs in information density \cite{levyJaeger2007}. Our goal is to test how far this efficiency claim extends beyond production, especially for comprehension and acceptability judgments.
+Information theory gives a compact way to connect linguistic prediction with human processing. The surprisal of a word $u_n$ is $s(u_n)=-\log p(u_n \mid u_{<n})$, so lower-probability words carry more information \cite{shannon1948,hale2001,levy2008}. Prior literature work shows that contextual surprisal predicts processing difficulty is approximately linear \cite{smithLevy2013,goodkind2018}. UID posits a related but stronger efficiency claim: speakers avoid sharp peaks and troughs in information density \cite{levyJaeger2007}. Our goal is to test whether this efficiency claim extends beyond production to comprehension and acceptability judgments.
 
 Meister et al. \cite{meister2021} made this issue testable by comparing a family of sentence-level predictors:
 \begin{equation}
@@ -51,7 +53,7 @@ Meister et al. \cite{meister2021} made this issue testable by comparing a family
 \end{equation}
 When $k=1$, this reduces to summed surprisal, matching the standard additive surprisal account. When $k>1$, high-surprisal words receive disproportionate weight; for fixed total information and length, such a cost is minimized by more uniform information allocation. Meister et al. report that reading-time data are broadly consistent with previous linear surprisal results, but also compatible with weak super-linearity, whereas acceptability judgments more clearly favor $k>1$ and other global UID operationalizations.
 
-Our project asks whether this prior result is reproducible and whether its boundary conditions are theoretically meaningful. Rather than treating reproducibility as exact numerical identity, we focus on a public, inspectable subset: CoLA \cite{warstadt2019} and BNC acceptability judgments \cite{lau2017}, Natural Stories self-paced reading \cite{futrell2018}, Provo eye movements \cite{luke2018}, GPT-2 \cite{radford2019}, BERT \cite{devlin2019}, and a WikiText-103/KenLM 5-gram model \cite{merity2017,heafield2011}. We then ask whether the same UID logic transfers to ordinary reading, structured acceptability, and reading of generated text using OneStop \cite{berzak2025}, MegaAcceptability \cite{whiteRawlins2020}, and EMTeC \cite{bolliger2025}.
+Our project asks whether this prior result is reproducible and whether its boundary conditions are theoretically meaningful. Our replication focus on public data subset: CoLA \cite{warstadt2019} and BNC acceptability judgments \cite{lau2017}, Natural Stories self-paced reading \cite{futrell2018}, Provo eye movements \cite{luke2018}, GPT-2 \cite{radford2019}, BERT \cite{devlin2019}, and a WikiText-103/KenLM 5-gram model \cite{merity2017,heafield2011}. We then ask whether the same UID logic transfers to ordinary reading, structured acceptability, and reading of LLM-generated text using OneStop \cite{berzak2025}, MegaAcceptability \cite{whiteRawlins2020}, and EMTeC \cite{bolliger2025}.
 
 \section{Methods}
 
@@ -112,11 +114,11 @@ Our project asks whether this prior result is reproducible and whether its bound
 
 \section{Discussion}
 
-The results are interesting because they separate two claims that are easy to conflate. Surprisal is useful for predicting human processing, but the distributional shape of surprisal is much more visible in acceptability judgments than in sentence-level reading times. After applying the same GPT-2, BERT, and KenLM scoring families to every extension, this contrast is not driven by one model or one dataset: MegaAcceptability strengthens the acceptability-side conclusion, OneStop remains near zero at paragraph level, and EMTeC connects UID-style predictors to LLM decoding decisions with small reading-time gains.
+Our project has two main goals: first, to replicate Meister et al.'s study of the UID hypothesis; second, to add three extensions that test the generalizability of UID to new tasks and text types. It is interesting to see a consistent pattern across our results: acceptability always shows stronger UID effects than reading time. This replicates the original paper's main contrast. But we also see that effect strength varies by task and text type. MegaAcceptability strengthens the acceptability-side conclusion, OneStop remains near zero at the paragraph level, and EMTeC shows only small reading-time gains.
 
-This connects directly to class material because the project starts from entropy, surprisal, and probabilistic language models, then asks whether an information-theoretic efficiency principle predicts cognition. The answer is graded rather than binary. UID is not simply confirmed or rejected; instead, it is strongest when the behavioral measure is acceptability, weaker for online reading times, and sensitive to the language model used to estimate surprisal.
+Our approach matters because it tests the boundaries of UID beyond the original datasets. By applying the same three model families to every extension, we can compare results across tasks and corpora directly. This lets us see where UID generalizes (MegaAcceptability), where it weakens (OneStop), and where it gives mixed signals (EMTeC). The significance is to understand it as a context-dependent principle.
 
-The project opens several future directions. Empirically, Brown, Dundee, GECO, and TransfoXL should be restored where access and compatibility allow; the extensions should be harmonized at word, sentence, and trial levels; and eye-tracking analyses should move toward word-level mixed models where possible. For generated text, the next step is to compare surprisal from the actual text-generating models, not only GPT-2, BERT, and a 5-gram proxy. Conceptually, the extensions suggest using UID as a diagnostic for both human language processing and LLM decoding policies: different generation strategies create different information-density profiles for readers.
+For future exploration, we can test more languages and spoken language data. Current work covers only English and Dutch, and only written text. We can also apply word-level mixed-effects models. These models allow us to control for two sources of noise: subject variability (some people read faster than others) and word variability (short words require less time to process than longer ones). By predicting reading time for each word, we could better detect whether surprisal spikes at specific words drive the UID effect.
 
 \clearpage
 
